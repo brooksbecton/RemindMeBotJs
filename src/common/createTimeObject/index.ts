@@ -5,7 +5,7 @@
 
 import Time from "./../../types/Time";
 
-function createTimeObject(reminderStr: string): Time {
+export function createTimeObject(reminderStr: string): Time {
   let second = 0;
   let minute = 0;
   let hour = 0;
