@@ -12,12 +12,15 @@ module.exports = {
     ]
   },
   resolve: {
-    modules: [path.resolve(__dirname, "src"), "node_modules"],
-    extensions: [".tsx", ".ts", ".js", ".json"]
+    extensions: [".tsx", ".ts", ".js", ".json", "node"]
   },
   output: {
     filename: "bundle.js",
     path: path.resolve(__dirname, "dist")
   },
-  target: "node"
+  target: "node",
+  mode: "development",
+  stats: {
+    warnings: false
+  }
 };
