@@ -5,9 +5,9 @@ import { DateTime } from "luxon";
 dotenv.config();
 
 import createTimeObject from "./common/createTimeObject/index";
+import messageContainsHook from "./common/messageContainsHook";
 import parseMessage from "./common/parseMessage/index";
 
-import { botHook } from "./constants/bot";
 const client = new Discord.Client();
 
 client.on("ready", () => {
@@ -15,34 +15,38 @@ client.on("ready", () => {
 });
 
 client.on("message", msg => {
-  main(msg);
+  handleMessage(msg);
 });
 
 client.login(process.env.DISCORD_TOKEN);
 
-export function main(msg: Discord.Message) {
-  if (msg.content.toLowerCase().indexOf(botHook) !== -1) {
-    const time = createTimeObject(msg.content);
-    const reminderMessage = parseMessage(msg.content);
+export function createReminder(msg: string): Promise<string> {
+  return new Promise((resolve: Function) => {
+    const time = createTimeObject(msg);
 
+    const { second, hour, minute } = time;
+
+    const reminderDateTime = DateTime.local().plus({
+      seconds: second,
+      hours: hour,
+      minutes: minute
+    });
+
+    schedule.scheduleJob(reminderDateTime.toJSDate(), function() {
+      resolve();
+    });
+  });
+}
+
+export function handleMessage(msg: Discord.Message) {
+  const reminderMessage = parseMessage(msg.content);
+  if (messageContainsHook(msg.content)) {
     if (reminderMessage.length > 0) {
-      const { second, hour, minute } = time;
-
-      const reminderDateTime = DateTime.local().plus({
-        seconds: second,
-        hours: hour,
-        minutes: minute
+      createReminder(msg.content).then(() => {
+        msg.reply(reminderMessage);
       });
-
-      const jorb = schedule.scheduleJob(
-        reminderDateTime.toJSDate(),
-        function() {
-          msg.reply(reminderMessage);
-        }
-      );
-      msg.reply("Reminding you at " + jorb.nextInvocation());
     } else {
-      msg.reply("No message provided");
+      msg.reply("No Message :(");
     }
   }
 }

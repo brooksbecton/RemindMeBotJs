@@ -4,7 +4,7 @@
  */
 
 import Time from "./../../types/Time";
-import { RecurrenceRule } from "node-schedule";
+
 export function createTimeObject(reminderStr: string): Time {
   let second = 0;
   let minute = 0;
