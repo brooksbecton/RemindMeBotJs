@@ -4,8 +4,9 @@ import * as schedule from "node-schedule";
 import { DateTime } from "luxon";
 dotenv.config();
 
-// import Reminder from "./models/Reminder";
 import createTimeObject from "./common/createTimeObject/index";
+import parseMessage from "./common/parseMessage/index";
+
 import { botHook } from "./constants/bot";
 const client = new Discord.Client();
 
@@ -16,7 +17,7 @@ client.on("ready", () => {
 client.on("message", msg => {
   if (msg.content.toLowerCase().indexOf(botHook) !== -1) {
     const time = createTimeObject(msg.content);
-
+    const reminderMessage = parseMessage(msg.content);
     const { second, hour, minute } = time;
 
     const reminderDateTime = DateTime.local().plus({
@@ -26,7 +27,7 @@ client.on("message", msg => {
     });
 
     const jorb = schedule.scheduleJob(reminderDateTime.toJSDate(), function() {
-      msg.reply("Oh Dear");
+      msg.reply(reminderMessage);
     });
     msg.reply("Reminding you at " + jorb.nextInvocation());
   }
