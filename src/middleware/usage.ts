@@ -1,8 +1,18 @@
-import { usageFlag } from "./../constants/bot";
-import { usage } from "./../constants/bot";
+import { usage, usageFlags } from "./../constants/bot";
+
+function messageContainsUsageFlag(msg: string) {
+  let flagFound = false;
+  usageFlags.forEach(flag => {
+    if (msg.indexOf(flag) !== -1) {
+      flagFound = true;
+    }
+  });
+
+  return flagFound;
+}
 
 function printUsage(msg: any) {
-  if (msg.content.indexOf(usageFlag) !== -1) {
+  if (messageContainsUsageFlag(msg.content)) {
     msg.reply(usage);
   }
 }

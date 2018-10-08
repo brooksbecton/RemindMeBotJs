@@ -1,8 +1,14 @@
+import * as dotenv from "dotenv";
+
+dotenv.config();
+
 export const botHook = "!remindme";
 export const messageFlag = "-m";
-export const usageFlag = "-usage";
+export const usageFlags = ["-usage", "-help", "🤷", `¯\_(ツ)_/¯`];
 export const usage = `
     ReminderBot is a bot for reminding someone with a message 💁
+
+    Invite URL: https://discordapp.com/oauth2/authorize?client_id=${process.env.CLIENT_ID}&scope=bot&permissions=0
 
 
     Usage: 
