@@ -11,9 +11,9 @@ export var ReminderSchema: Schema = new Schema({
   second: Number,
   minute: Number,
   hour: Number,
-  date: Number,
+  createdOn: Date,
   dayOfWeek: Number,
-  msg: Number
+  msg: String
 });
 
 connection.once("open", function() {
@@ -21,4 +21,3 @@ connection.once("open", function() {
 });
 
 export const Reminder = model("Reminder", ReminderSchema);
-export default Reminder;

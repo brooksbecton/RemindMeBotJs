@@ -3,6 +3,7 @@ import { DateTime } from "luxon";
 
 import parseMessage from "./../common/parseMessage/index";
 import createTimeObject from "./../common/createTimeObject/index";
+import { Reminder } from "../models/Reminder";
 
 function createReminder(msg: string): Promise<string> {
   return new Promise<string>((resolve: Function) => {
@@ -17,6 +18,15 @@ function createReminder(msg: string): Promise<string> {
     });
 
     schedule.scheduleJob(reminderDateTime.toJSDate(), function() {
+      const reminder = new Reminder({
+        second,
+        minute,
+        hour,
+        createdOn: new Date().toDateString(),
+        dayOfWeek: new Date().getDay(),
+        msg
+      });
+      reminder.save();
       resolve();
     });
   });

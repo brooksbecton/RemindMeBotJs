@@ -1,30 +1,30 @@
 import { Client } from "./../node_modules/discord.js/src/index";
 import * as dotenv from "dotenv";
+import { connect } from "mongoose";
 
 import messageContainsHook from "./common/messageContainsHook/index";
 import reminders from "./middleware/reminders";
 import usage from "./middleware/usage";
-
 interface IMessage {
-  content: string, 
+  content: string;
   author: {
-    bot: boolean
-  }
+    bot: boolean;
+  };
 }
-
 dotenv.config();
+connect(process.env.MONGO_URL, { useNewUrlParser: true }).then(() => {
+  const client = new Client();
 
-const client = new Client();
+  client.on("ready", () => {
+    console.log(`Logged in as ${client.user.tag}!`);
+  });
 
-client.on("ready", () => {
-  console.log(`Logged in as ${client.user.tag}!`);
+  client.on("message", (msg: IMessage) => {
+    handleMessage(msg);
+  });
+
+  client.login(process.env.DISCORD_TOKEN);
 });
-
-client.on("message", (msg: IMessage) => {
-  handleMessage(msg);
-});
-
-client.login(process.env.DISCORD_TOKEN);
 
 /**
  * Passes a user's msg to middleware
