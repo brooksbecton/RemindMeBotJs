@@ -5,6 +5,9 @@ import { connect } from "mongoose";
 import messageContainsHook from "./common/messageContainsHook/index";
 import reminders from "./middleware/reminders";
 import usage from "./middleware/usage";
+import { Reminder } from "./models/Reminder";
+import { scheduleJob } from "node-schedule";
+
 interface IMessage {
   content: string;
   author: {
@@ -12,19 +15,36 @@ interface IMessage {
   };
 }
 dotenv.config();
-connect(process.env.MONGO_URL, { useNewUrlParser: true }).then(() => {
-  const client = new Client();
+connect(process.env.MONGO_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+  .then(() => {
+    const client = new Client();
 
-  client.on("ready", () => {
-    console.log(`Logged in as ${client.user.tag}!`);
-  });
+    // Load in previous reminders
+    Reminder.find({}, (err, documents) => {
+      documents.forEach(document => {
+        const remindDate = new Date(document.get("remindOn"));
+        const msg = document.get("msg");
+        scheduleJob(remindDate, () => {
+          // Need to save the author id to send this message back
+          console.log(msg);
+        });
+      });
+    });
 
-  client.on("message", (msg: IMessage) => {
-    handleMessage(msg);
-  });
+    client.on("ready", () => {
+      console.log(`Logged in as ${client.user.tag}!`);
+    });
 
-  client.login(process.env.DISCORD_TOKEN);
-});
+    client.on("message", (msg: IMessage) => {
+      handleMessage(msg);
+    });
+
+    client.login(process.env.DISCORD_TOKEN);
+  })
+  .catch(e => console.error(e));
 
 /**
  * Passes a user's msg to middleware

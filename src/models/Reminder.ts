@@ -8,11 +8,8 @@ export interface IReminderModel extends Time, Document {
 }
 
 export var ReminderSchema: Schema = new Schema({
-  second: Number,
-  minute: Number,
-  hour: Number,
-  createdOn: Date,
-  dayOfWeek: Number,
+  createdOn: Number,
+  remindOn: Number,
   msg: String
 });
 
