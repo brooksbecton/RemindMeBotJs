@@ -4,6 +4,6 @@
     "noImplicitAny": true,
     "target": "es6",
     "sourceMap": true,
-    "allowJs": true
+    "allowJs": true,
   }
 }

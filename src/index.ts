@@ -20,22 +20,28 @@ connect(process.env.MONGO_URL, {
   useUnifiedTopology: true
 })
   .then(() => {
-    const client = new Client();
-
-    // Load in previous reminders
-    Reminder.find({}, (err, documents) => {
-      documents.forEach(document => {
-        const remindDate = new Date(document.get("remindOn"));
-        const msg = document.get("msg");
-        scheduleJob(remindDate, () => {
-          // Need to save the author id to send this message back
-          console.log(msg);
-        });
-      });
-    });
+    const client = new Client({});
 
     client.on("ready", () => {
       console.log(`Logged in as ${client.user.tag}!`);
+
+      // Load in previous reminders
+      Reminder.find({})
+        .where("remindOn")
+        .gt(new Date().getTime())
+        .exec((err, documents) => {
+          documents.forEach(async document => {
+            const remindDate = new Date(document.get("remindOn"));
+            const msg = document.get("msg");
+            const channel = document.get("channel");
+            const author = document.get("author");
+            const user = await client.fetchUser(author);
+            scheduleJob(remindDate, () => {
+              // Need to save the author id to send this message back
+              client.channels.get(channel).send(`@${user.username}, ${msg}`);
+            });
+          });
+        });
     });
 
     client.on("message", (msg: IMessage) => {

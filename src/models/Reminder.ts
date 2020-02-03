@@ -10,7 +10,9 @@ export interface IReminderModel extends Time, Document {
 export var ReminderSchema: Schema = new Schema({
   createdOn: Number,
   remindOn: Number,
-  msg: String
+  msg: String,
+  author: String,
+  channel: String
 });
 
 connection.once("open", function() {

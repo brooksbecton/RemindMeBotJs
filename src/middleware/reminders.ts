@@ -5,9 +5,17 @@ import parseMessage from "./../common/parseMessage/index";
 import createTimeObject from "./../common/createTimeObject/index";
 import { Reminder } from "../models/Reminder";
 
-async function createReminder(msg: string): Promise<string> {
+async function createReminder({
+  content,
+  author,
+  channel
+}: {
+  content: string;
+  author: any;
+  channel: any;
+}): Promise<string> {
   return new Promise<string>((resolve: Function) => {
-    const time = createTimeObject(msg);
+    const time = createTimeObject(content);
 
     const { second, hour, minute } = time;
 
@@ -17,13 +25,16 @@ async function createReminder(msg: string): Promise<string> {
       minutes: minute
     });
 
+    const reminder = new Reminder({
+      createdOn: new Date().getTime(),
+      remindOn: reminderDateTime.toJSDate().getTime(),
+      msg: parseMessage(content),
+      author: author.id,
+      channel: channel.id
+    });
+    reminder.save();
+
     schedule.scheduleJob(reminderDateTime.toJSDate(), function() {
-      const reminder = new Reminder({
-        createdOn: new Date().getTime(),
-        remindOn: reminderDateTime.toJSDate().getTime(),
-        msg: parseMessage(msg)
-      });
-      reminder.save();
       resolve();
     });
   });
@@ -32,8 +43,8 @@ async function createReminder(msg: string): Promise<string> {
 function handleReminderMessages(msg: any) {
   const reminderMessage = parseMessage(msg.content);
   if (reminderMessage.length > 0) {
-    msg.reply(":thumbsup:");
-    createReminder(msg.content).then(() => {
+    msg.react("👍");
+    createReminder(msg).then(() => {
       msg.reply(reminderMessage);
     });
   }
