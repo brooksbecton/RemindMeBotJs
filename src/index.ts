@@ -38,7 +38,7 @@ connect(process.env.MONGO_URL, {
             const user = await client.fetchUser(author);
             scheduleJob(remindDate, () => {
               // Need to save the author id to send this message back
-              client.channels.get(channel).send(`@${user.username}, ${msg}`);
+              client.channels.get(channel).send(`<@${author}>, ${msg}`);
             });
           });
         });

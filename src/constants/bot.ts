@@ -27,5 +27,5 @@ export const usage = `
             Prints what the bot will accept such as content and flags
 
             Example:
-                !remindme -usage
+                !remindme --usage
 `;
