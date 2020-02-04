@@ -2,7 +2,7 @@ import * as schedule from "node-schedule";
 import { DateTime } from "luxon";
 
 import parseMessage from "./../common/parseMessage/index";
-import createTimeObject from "./../common/createTimeObject/index";
+import { getReminderSecondsOffset } from "../common/getReminderSecondsOffset";
 import { Reminder } from "../models/Reminder";
 
 async function createReminder({
@@ -15,14 +15,10 @@ async function createReminder({
   channel: any;
 }): Promise<string> {
   return new Promise<string>((resolve: Function) => {
-    const time = createTimeObject(content);
-
-    const { second, hour, minute } = time;
+    const seconds = getReminderSecondsOffset(content);
 
     const reminderDateTime = DateTime.local().plus({
-      seconds: second,
-      hours: hour,
-      minutes: minute
+      seconds
     });
 
     const reminder = new Reminder({
