@@ -1,5 +1,5 @@
-import { Client } from "./../node_modules/discord.js/src/index";
-import * as dotenv from "dotenv";
+const Discord = require('discord.js');
+import dotenv from "dotenv";
 import { connect } from "mongoose";
 
 import messageContainsHook from "./common/messageContainsHook/index";
@@ -20,7 +20,7 @@ connect(process.env.MONGO_URL, {
   useUnifiedTopology: true
 })
   .then(() => {
-    const client = new Client({});
+    const client = new Discord.Client({});
 
     client.on("ready", () => {
       console.log(`Logged in as ${client.user.tag}!`);
